@@ -3,7 +3,7 @@
 require_once 'lib.php';
 
 
-$data = csv_to_array('tickets.csv');
+
 
 /**
 Array
@@ -20,6 +20,7 @@ Array
 )
 
 **/
+// mapping keys from ASSEMBLA to GITHUB
 $keys = array( 
 			'assigned_to' 	=> 'assignees',
 			'reporter' 		=> 'assignees',
@@ -29,23 +30,22 @@ $keys = array(
 			'priority'		=> 'label'
 		);
 
+// Mapper Array
 $results = array();
-
 $results['assignees'] = array();
 $results['milestone'] = array();
 $results['state'] = array();
 $results['label']=array();
 
-$i=0;
-foreach($data as $record){
+$tickets = csv_to_array(TICKET_FILE);
 
-	foreach($keys as $key=>$to){
-		if(isset($record[$key])){
-			$results[$to][]=$record[$key];
+foreach($tickets as $ticket){
+	// map this ticket data
+	foreach($keys as $from=>$to){
+		if(isset($record[$from])){
+			$results[$to][]=$ticket[$from];
 		}
 	}
-
-//	if($i++ > 10) break;
 }
 
 $file = array();
@@ -55,5 +55,10 @@ foreach($results as $key => $result){
 	$file[$key] = array_flip($tmp);
 }
 
-file_put_contents('mapper.php', var_export($file,true));
+$content = var_export($file,true);
+$content .= '<?php '."\n ".' $mapper = '. $content;
+file_put_contents(MAPPER_FILE, $content);
+
+echo "Please update mapper file with your expectation of user/label/milestones. Then only execute import.php";
+exit;
 

@@ -6,15 +6,15 @@ require_once 'config.php';
 // load functions
 require_once 'lib.php';
 
-// load mapping (should be generated before unning this script)
-require_once 'mapper.php';
+// load mapping (should be generated before running this script)
+require_once MAPPER_FILE;
 
 //populate github repo's database 
 $github_database=array();
 $github_database = github_api_populate($github_database);
 
 // get all tickets
-$tickets = csv_to_array('tickets.csv');
+$tickets = csv_to_array(TICKET_FILE_CSV);
 
 
 // 1: Check & Create Milestones in Github if missing

@@ -9,3 +9,7 @@ define('GH_REPO','xxxx');
 define('GH_OWNER','readybytes');
 
 define('GH_URL', 'https://api.github.com/repos/'.GH_OWNER.'/'.GH_REPO);
+
+define('TICKET_FILE_CSV','data/tickets.csv');
+define('MAPPER_FILE','data/mapper.php');
+
