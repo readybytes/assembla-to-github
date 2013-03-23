@@ -1,0 +1,11 @@
+<?php
+
+// global variables required to work with repo
+define('GH_USERNAME','XXX');
+define('GH_PASSWORD','XXX');
+
+define('GH_ORG', 'readybytes');
+define('GH_REPO','xxxx');
+define('GH_OWNER','readybytes');
+
+define('GH_URL', 'https://api.github.com/repos/'.GH_OWNER.'/'.GH_REPO);
