@@ -37,12 +37,12 @@ $results['milestone'] = array();
 $results['state'] = array();
 $results['label']=array();
 
-$tickets = csv_to_array(TICKET_FILE);
+$tickets = csv_to_array(TICKET_FILE_CSV);
 
 foreach($tickets as $ticket){
 	// map this ticket data
 	foreach($keys as $from=>$to){
-		if(isset($record[$from])){
+		if(isset($ticket[$from])){
 			$results[$to][]=$ticket[$from];
 		}
 	}
@@ -56,7 +56,9 @@ foreach($results as $key => $result){
 }
 
 $content = var_export($file,true);
-$content .= '<?php '."\n ".' $mapper = '. $content;
+
+$content = '<?php '."\n ".' $mapper = '. $content;
+
 file_put_contents(MAPPER_FILE, $content);
 
 echo "Please update mapper file with your expectation of user/label/milestones. Then only execute import.php";

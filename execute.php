@@ -13,10 +13,6 @@ require_once MAPPER_FILE;
 $github_database=array();
 $github_database = github_api_populate($github_database);
 
-// get all tickets
-$tickets = csv_to_array(TICKET_FILE_CSV);
-
-
 // 1: Check & Create Milestones in Github if missing
 foreach($mapper['milestone'] as $key => $value){
 	echo "\n Checking milestone [$value] ...";
@@ -35,6 +31,8 @@ foreach($mapper['label'] as $key => $value){
 	}
 }
 
+// get all tickets
+$tickets = csv_to_array(TICKET_FILE_CSV);
 
 // 3: Check & Create issues now
 foreach($tickets as $aTicket){
@@ -47,8 +45,8 @@ foreach($tickets as $aTicket){
 		continue;
 	}
 
-	$issue = format_issue($aTicket, $mapper, $github_database);
-	github_api_create_issue($gIssue, $github_database);
+	//$issue = format_issue($aTicket, $mapper, $github_database);
+	github_api_create_issue($aNumber, $gIssue, $github_database);
 }
 
 echo "Successfully Imported Tickets. \n Enjoy";
@@ -57,7 +55,7 @@ exit;
 function format_issue($assembla,$mapper, &$database)
 {
 	// get mapping items
-	$map_assignee	=	$mapper['assignee'];
+	$map_assignee	=	$mapper['assignees'];
 	$map_label	 	=	$mapper['label'];
 	$map_milestone	=	$mapper['milestone'];
 	$map_state		=	$mapper['state'];
@@ -76,6 +74,7 @@ function format_issue($assembla,$mapper, &$database)
 	}
 
 	//###### 1. ASSIGNED_TO maps to ASSIGNEE
+	$assigned_to = $assembla['assigned_to'];
 	if($map_assignee[$assigned_to]){
 		$github['assignee'] =  $map_assignee[$assigned_to];
 	}else{
@@ -84,12 +83,14 @@ function format_issue($assembla,$mapper, &$database)
 	}
 
 	//###### 2. TYPE maps to LABEL
+	$Type = $assembla['Type'];
 	if(isset($map_label[$Type])){
 		$github['labels'][]		=  $map_label[$Type];
 	}
 
 
 	//###### 3. MILESTONE maps to MILESTONE
+	$milestone = $assembla['milestone'];
 	if(isset($map_milestone[$milestone])){
 		$milestone = $map_milestone[$milestone];
 	}else{
@@ -107,6 +108,7 @@ function format_issue($assembla,$mapper, &$database)
 
 	//###### 4. STATUS maps to STATE 
 	$github['state'] = 'open';
+	$status = $assembla['status'];
 	if(isset($map_state[$status]))
 	{
 		$github['state']	=  $map_state[$status];

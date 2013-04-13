@@ -34,13 +34,17 @@ function github_api_populate(&$database)
 	$args	= array('state'=>'open');
 	$result = github_request_api($url, "GET",  $args);
 	foreach($result as $m){
-		$database['milestones'][$m->title]=$m->number;
+		if(isset($m->title)){
+			$database['milestones'][$m->title]=$m->number;
+		}
 	}
 
 	$args	= array('state'=>'closed');
 	$result = github_request_api($url, "GET",  $args);
 	foreach($result as $m){
-		$database['milestones'][$m->title]=$m->number;
+		if(isset($m->title)){
+			$database['milestones'][$m->title]=$m->number;
+		}
 	}
 
 	//populate labels
@@ -49,7 +53,9 @@ function github_api_populate(&$database)
 	$args	= array();
 	$result = github_request_api($url, "GET",  $args);
 	foreach($result as $m){
-		$database['labels'][$m->name]=true;
+		if(isset($m->name)){
+			$database['labels'][$m->name]=true;
+		}
 	}
 
 	// populate already created issues (from assembla)
@@ -123,7 +129,7 @@ function github_api_create_issue($aNumber, $data, &$database)
 	$github_database['issues']["$aNumber"]=$result->number;
 
 	// if state is closed, then update issue again.
-	if($data['state']) != 'open')
+	if($data['state'] != 'open')
 	{
 		$gNumber= $result->number;
 		$url 	= GH_URL.'/issues/'.$gNumber;
@@ -136,21 +142,21 @@ function github_api_create_issue($aNumber, $data, &$database)
 function github_request_api($url, $method, $data=array()) 
 {		
 	    $ch = curl_init();
-	    curl_setopt($ch, CURLOPT_URL, $url);
-	    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
 	    
-	    $data=json_encode($data);
 	    if($method == "POST" || $method == "PATCH"){
+	    	$data=json_encode($data);
 	    	curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 	    }elseif($method=='GET'){
-			$url += '?';
+			$url .= '?';
 			if(is_array($data) && count($data)>0){
 				foreach($data as $key => $value){
-					$url += "$key=$value&";
+					$url .= "$key=$value&";
 				}
 			}
 	    }
 	    
+	    curl_setopt($ch, CURLOPT_URL, $url);
+	    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
 	    curl_setopt($ch, CURLOPT_HEADER, true);
 	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
 	    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
